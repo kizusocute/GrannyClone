@@ -1,0 +1,26 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class UIManager : MonoBehaviour
+{
+    public static UIManager Instance;
+    public GameObject keypadPanel;
+    public GameObject keypad;
+
+    private void OnEnable()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+    }
+}
