@@ -1,108 +1,141 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class Granny : MonoBehaviour
 {
-    [Header("Sound Detection")]
-    NavMeshAgent navMeshAgent;
-    public float moveSpeed = 2.5f;
-    public float waittingTime = 10f;
+    public enum GrannyState
+    {
+        Idle,
+        HeardSound,
+        Waiting,
+        Returning,
+        Chasing,
+        Attacking,
+        Dead
+    }
+
+    [Header("References")]
+    private NavMeshAgent navMeshAgent;
     public Transform startPosition;
-
-    private Vector3 soundLocation;
-    public bool isReturning = false;
-    private bool isChasing = false;
-    private bool isAttacking = false;
-    private bool isWaiting = false;
-    private bool isDead = false;
-    //bool soundHeard = false;
-
-    [Header("Granny States")]
     public Transform player;
-    public float detectionRange = 15f;
-    private float attackRange = 2f;
-    private float attackCooldown = 1f;
+
+    [Header("Settings")]
+    public float moveSpeed = 2.5f;
+    public float damageHit = 100f;
+    public float waittingTime = 5f;
+    public float detectionRange = 5f;
+    public float attackRange = 2f;
+    public float attackCooldown = 2f;
+
     private float lastAttackTime = 0f;
+    private Vector3 soundLocation;
+
+    private GrannyState currentState = GrannyState.Idle;
+
+    private Animator animator;
+    private bool isAttacking = false;
+    private bool isDead = false;
+
+    [Header("Footstep")]
+    public AudioClip[] footstepSounds;
+    AudioSource audioSource;
+    float footstepInterval = .5f;
+    float nextFootstepTime = 0f;
+
 
     void Start()
     {
+        animator = GetComponent<Animator>();
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.speed = moveSpeed;
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
     {
-        if (isDead) return;
+        UpdateAnimations();
+        switch (currentState)
+        {
+            case GrannyState.Dead:
+                
+                break;
 
-        if (isReturning)
-        {
-            ReturnToStart();
+            case GrannyState.Idle:
+
+                break;
+
+            case GrannyState.HeardSound:
+                MoveToSound();
+                break;
+
+            case GrannyState.Waiting:
+                
+                break;
+
+            case GrannyState.Returning:
+                ReturnToStart();
+                break;
+
+            case GrannyState.Chasing:
+                ChasePlayer();
+                break;
+
+            case GrannyState.Attacking:
+                AttackPlayer();
+                break;
         }
-        else if (isChasing )
-        {
-            ChasePlayer();
-        }
-        else if (!isWaiting)
+        if (currentState != GrannyState.Chasing && currentState != GrannyState.Attacking)
         {
             LookForPlayer();
         }
-        else if (isAttacking)
-        {
-            AttackPlayer();
-        }
     }
+
+    
     public void OnSoundHeard(Vector3 location)
     {
-        if(isDead) return;
+        if (currentState == GrannyState.Dead) return;
 
-        //soundHeard = true;
         soundLocation = location;
-        isReturning = false;
-        isChasing = false;
-        isAttacking = false;
-        isWaiting = false;
-        MoveToSoundLocation();
+        currentState = GrannyState.HeardSound;
     }
 
-    void MoveToSoundLocation()
+    void MoveToSound()
     {
         navMeshAgent.SetDestination(soundLocation);
-        if(Vector3.Distance(transform.position, soundLocation) <= navMeshAgent.stoppingDistance)
+
+        if (!navMeshAgent.pathPending && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
         {
+            currentState = GrannyState.Waiting;
             StartCoroutine(WaitBeforeReturning());
         }
     }
 
     IEnumerator WaitBeforeReturning()
     {
-        isWaiting = true;
         yield return new WaitForSeconds(waittingTime);
-        isWaiting = false;
-        isReturning = true;
-        //soundHeard = false;
+        currentState = GrannyState.Returning;
     }
-    
+
     void ReturnToStart()
     {
         navMeshAgent.SetDestination(startPosition.position);
-        if (Vector3.Distance(transform.position, startPosition.position) <= navMeshAgent.stoppingDistance)
+
+        if (!navMeshAgent.pathPending && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
         {
-            isReturning = false;
+            currentState = GrannyState.Idle;
         }
     }
 
     void LookForPlayer()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRange);
-        foreach (var hitCollider in hitColliders)
+        Collider[] hits = Physics.OverlapSphere(transform.position, detectionRange);
+
+        foreach (var hit in hits)
         {
-            if (hitCollider.CompareTag("Player"))
+            if (hit.CompareTag("Player"))
             {
-                isChasing = true;
-                isReturning = false;
-                //Debug.Log(isChasing);
+                currentState = GrannyState.Chasing;
                 break;
             }
         }
@@ -110,39 +143,111 @@ public class Granny : MonoBehaviour
 
     void ChasePlayer()
     {
+        if (navMeshAgent.isStopped) navMeshAgent.isStopped = false;
         navMeshAgent.SetDestination(player.position);
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
         if (distanceToPlayer <= attackRange)
         {
             navMeshAgent.isStopped = true;
-            isChasing = false;
-            isAttacking = true;
+            currentState = GrannyState.Attacking;
         }
         else if (distanceToPlayer > detectionRange)
         {
-            isChasing = false;
-            isReturning = true;
+            navMeshAgent.isStopped = false;
+            currentState = GrannyState.Returning;
         }
-        
     }
 
     void AttackPlayer()
     {
-        if(Time.time > lastAttackTime + attackCooldown)
+        if (isAttacking || currentState != GrannyState.Attacking) return;
+
+        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
+        if (distanceToPlayer > attackRange)
         {
-            PlayerController playerController = player.GetComponent<PlayerController>();
-            if(playerController != null)
+            navMeshAgent.isStopped = false;
+            currentState = GrannyState.Chasing;
+            return;
+        }
+
+        StartCoroutine(PerformAttack());
+    }
+
+
+    public void Die()
+    {
+        currentState = GrannyState.Dead;
+        navMeshAgent.isStopped = true;
+        
+    }
+    void UpdateAnimations()
+    {
+        bool isMoving = navMeshAgent.velocity.magnitude > 0.1f;
+
+        animator.SetBool("isWalking", isMoving);
+        animator.SetBool("isAttacking", currentState == GrannyState.Attacking || isAttacking);
+        animator.SetBool("isDead", currentState == GrannyState.Dead);
+
+        bool isIdle = !isMoving && currentState == GrannyState.Idle;
+
+        animator.SetBool("isIdle", isIdle);
+    }
+    IEnumerator PerformAttack()
+    {
+        isAttacking = true;
+        if (Time.time < lastAttackTime + attackCooldown)
+        {
+            isAttacking = false;
+            navMeshAgent.isStopped = false;
+            currentState = GrannyState.Attacking; 
+            yield break;
+        }
+        lastAttackTime = Time.time;
+        navMeshAgent.isStopped = true;
+
+        yield return new WaitForSeconds(1.0f); // attack anim time
+
+        PlayerController playerController = player.GetComponent<PlayerController>();
+        if (playerController != null)
+        {
+            playerController.TakeDamage(damageHit);
+            Debug.Log("Granny Hit");
+        }
+        StartCoroutine(Respawn(5));
+
+        yield return new WaitForSeconds(0.5f); // delay
+
+        navMeshAgent.isStopped = false;
+        isAttacking = false;
+
+        float dist = Vector3.Distance(transform.position, player.position);
+        currentState = (dist <= attackRange) ? GrannyState.Attacking : GrannyState.Chasing;
+    }
+    void PlayFootstepSounds()
+    {
+        if (navMeshAgent.velocity.magnitude > 0.1f && Time.time >= nextFootstepTime)
+        {
+            if (footstepSounds.Length > 0)
             {
-                Debug.Log("Die");
-            }
-            lastAttackTime = Time.time;
-            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-            if(distanceToPlayer > attackRange)
-            {
-                navMeshAgent.isStopped = false;
-                isChasing = true;
-                isAttacking = false;
+                int index = Random.Range(0, footstepSounds.Length);
+                AudioClip footstepClip = footstepSounds[index];
+                audioSource.PlayOneShot(footstepClip);
+
+                
+                nextFootstepTime = Time.time + footstepInterval ;
             }
         }
     }
+
+    IEnumerator Respawn(float delay)
+    {
+        yield return new WaitForSeconds(delay - 3f);
+        isDead = false;
+        transform.position = startPosition.position;
+        navMeshAgent.Warp(startPosition.position);
+        currentState = GrannyState.Idle;
+    }
+
 }

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public float currentHealth;
+    float maxHeatlh = 100f;
+
     public float speed = 3f;
     private Vector3 velocity;
     private CharacterController characterController;
@@ -20,9 +23,13 @@ public class PlayerController : MonoBehaviour
     public float standHeight = 2f;
     public float crouchSpeed = 1.5f;
     public bool isCrouching = false;
+    private bool isDead = false;
+
+    public Transform startPosition;
     void Start()
     {
         characterController = GetComponent<CharacterController>();
+        currentHealth = maxHeatlh;
     }
 
     // Update is called once per frame
@@ -81,5 +88,32 @@ public class PlayerController : MonoBehaviour
         isCrouching = !isCrouching;
         characterController.height = isCrouching ? crouchHeight : standHeight;
         characterController.radius = isCrouching ? 0.2f : 0.5f; 
+    }
+
+    public void TakeDamage(float damage)
+    {
+        currentHealth -= damage;
+        if(currentHealth <0 && !isDead)
+        {
+            Die();
+        }
+    }
+
+    void Die()
+    {
+        isDead = true;
+        StartCoroutine(HandleReSpawn());
+    }
+
+    IEnumerator HandleReSpawn()
+    {
+        yield return new WaitForSeconds(2f);
+        characterController.enabled = false;
+        transform.position = startPosition.position;
+        characterController.enabled = true;
+
+        //yield return new WaitForSeconds(3f);
+        currentHealth = maxHeatlh;
+        isDead = false;
     }
 }
