@@ -24,7 +24,7 @@ public class Granny : MonoBehaviour
     public float moveSpeed = 2.5f;
     public float damageHit = 100f;
     public float waittingTime = 5f;
-    public float detectionRange = 5f;
+    public float detectionRange = 10f;
     public float attackRange = 2f;
     public float attackCooldown = 2f;
 
@@ -89,6 +89,7 @@ public class Granny : MonoBehaviour
         {
             LookForPlayer();
         }
+        PlayFootstepSounds();
     }
 
     
@@ -184,13 +185,13 @@ public class Granny : MonoBehaviour
     }
     void UpdateAnimations()
     {
-        bool isMoving = navMeshAgent.velocity.magnitude > 0.1f;
+        bool isWalking = navMeshAgent.velocity.magnitude > 0.1f;
 
-        animator.SetBool("isWalking", isMoving);
+        animator.SetBool("isWalking", isWalking);
         animator.SetBool("isAttacking", currentState == GrannyState.Attacking || isAttacking);
         animator.SetBool("isDead", currentState == GrannyState.Dead);
 
-        bool isIdle = !isMoving && currentState == GrannyState.Idle;
+        bool isIdle = !isWalking && currentState == GrannyState.Idle;
 
         animator.SetBool("isIdle", isIdle);
     }
@@ -204,7 +205,6 @@ public class Granny : MonoBehaviour
             currentState = GrannyState.Attacking; 
             yield break;
         }
-        lastAttackTime = Time.time;
         navMeshAgent.isStopped = true;
 
         yield return new WaitForSeconds(1.0f); // attack anim time
@@ -215,9 +215,10 @@ public class Granny : MonoBehaviour
             playerController.TakeDamage(damageHit);
             Debug.Log("Granny Hit");
         }
+        lastAttackTime = Time.time;
         StartCoroutine(Respawn(5));
 
-        yield return new WaitForSeconds(0.5f); // delay
+        yield return new WaitForSeconds(1f); // delay
 
         navMeshAgent.isStopped = false;
         isAttacking = false;

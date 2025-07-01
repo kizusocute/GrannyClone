@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using Terresquall;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+
     public float currentHealth;
     float maxHeatlh = 100f;
 
@@ -26,6 +28,7 @@ public class PlayerController : MonoBehaviour
     private bool isDead = false;
 
     public Transform startPosition;
+    public GameObject loadingScreen;
     void Start()
     {
         characterController = GetComponent<CharacterController>();
@@ -59,11 +62,23 @@ public class PlayerController : MonoBehaviour
 
     void PlayerMovement()
     {
-        float currentSpeed = isCrouching ? crouchSpeed : speed;
-        float moveX = Input.GetAxis("Horizontal") * currentSpeed;
-        float moveZ = Input.GetAxis("Vertical") * currentSpeed;
-        Vector3 move = transform.right * moveX + transform.forward * moveZ;
-        characterController.Move(move * Time.deltaTime);
+        if (GameManager.Instance.isMobile)
+        {
+            float currentSpeed = isCrouching ? crouchSpeed : speed;
+            float moveX = VirtualJoystick.GetAxis("Horizontal") * currentSpeed;
+            float moveZ = VirtualJoystick.GetAxis("Vertical") * currentSpeed;
+            Vector3 move = transform.right * moveX + transform.forward * moveZ;
+            characterController.Move(move * Time.deltaTime);
+        }
+        else
+        {
+            float currentSpeed = isCrouching ? crouchSpeed : speed;
+            float moveX = Input.GetAxis("Horizontal") * currentSpeed;
+            float moveZ = Input.GetAxis("Vertical") * currentSpeed;
+            Vector3 move = transform.right * moveX + transform.forward * moveZ;
+            characterController.Move(move * Time.deltaTime);
+        }
+
     }
 
     void CameraMovement()
@@ -93,7 +108,7 @@ public class PlayerController : MonoBehaviour
     public void TakeDamage(float damage)
     {
         currentHealth -= damage;
-        if(currentHealth <0 && !isDead)
+        if(currentHealth <=0 && !isDead)
         {
             Die();
         }
@@ -102,17 +117,20 @@ public class PlayerController : MonoBehaviour
     void Die()
     {
         isDead = true;
+        GameManager.Instance.DecreaseDays();
         StartCoroutine(HandleReSpawn());
     }
 
     IEnumerator HandleReSpawn()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
+        loadingScreen.SetActive(true);
         characterController.enabled = false;
         transform.position = startPosition.position;
         characterController.enabled = true;
 
-        //yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(2.5f);
+        loadingScreen.SetActive(false);
         currentHealth = maxHeatlh;
         isDead = false;
     }

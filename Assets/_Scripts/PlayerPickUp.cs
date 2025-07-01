@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerPickUp : MonoBehaviour
 {
@@ -27,10 +28,12 @@ public class PlayerPickUp : MonoBehaviour
     public AudioClip dropSound;
     private AudioSource audioSource;
 
+
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
- 
+        UIManager.Instance.pickUpButton.onClick.AddListener(TryPickUpItem);
+        UIManager.Instance.dropButton.onClick.AddListener(Drop);
     }
 
     void Update()
@@ -110,6 +113,8 @@ public class PlayerPickUp : MonoBehaviour
         }
         PlaySound(pickUpSound);
         Debug.Log("Da nhat vat pham: " + item.name);
+        UIManager.Instance.pickUpButton.gameObject.SetActive(false);
+        UIManager.Instance.dropButton.gameObject.SetActive(true);
     }
 
     void Drop()
@@ -137,6 +142,8 @@ public class PlayerPickUp : MonoBehaviour
         }
 
         Debug.Log("Da tha vat pham");
+        UIManager.Instance.pickUpButton.gameObject.SetActive(true);
+        UIManager.Instance.dropButton.gameObject.SetActive(false);
     }
 
     void PlaySound(AudioClip audioClip)

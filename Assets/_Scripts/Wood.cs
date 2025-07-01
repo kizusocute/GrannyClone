@@ -8,7 +8,7 @@ public class Wood : MonoBehaviour
     private bool isFalling = false;
     private static int fallenWoodCount = 0;
 
-    private void Update()
+    void Update()
     {
         if (isFalling)
         {
@@ -19,7 +19,7 @@ public class Wood : MonoBehaviour
             if(fallenWoodCount >= 2)
             {
                 Debug.Log("...");
-                
+                GameManager.Instance.allLocksOpen = true;
             }
         }
     }
