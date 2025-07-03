@@ -58,7 +58,7 @@ public class PlayerPickUp : MonoBehaviour
         }
 
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, pickUpRange);
-        
+
         GameObject closestItem = null;
         float closestDistance = pickUpRange;
 
@@ -99,7 +99,7 @@ public class PlayerPickUp : MonoBehaviour
         {
             heldItem.GetComponent<Rigidbody>().isKinematic = true;
         }
-        if(isKey)
+        if (isKey)
         {
             heldItem.transform.SetParent(playerBody);
             heldItem.transform.position = itemHoldPosition.position;
@@ -125,7 +125,7 @@ public class PlayerPickUp : MonoBehaviour
             return;
         }
         heldItem.GetComponent<Collider>().enabled = true;
-        heldItem.transform.position = transform.position + transform.forward; 
+        heldItem.transform.position = transform.position + transform.forward;
         if (heldItem.GetComponent<Rigidbody>())
         {
             heldItem.GetComponent<Rigidbody>().isKinematic = false;
@@ -133,10 +133,11 @@ public class PlayerPickUp : MonoBehaviour
         heldItem.transform.SetParent(null);
         heldItem = null;
         isKey = false;
+        isAxe = false;
         PlaySound(dropSound);
 
         Granny granny = FindObjectOfType<Granny>();
-        if(granny != null)
+        if (granny != null)
         {
             granny.OnSoundHeard(transform.position);
         }
@@ -148,7 +149,7 @@ public class PlayerPickUp : MonoBehaviour
 
     void PlaySound(AudioClip audioClip)
     {
-        if(audioClip != null)
+        if (audioClip != null)
         {
             audioSource.PlayOneShot(audioClip);
         }

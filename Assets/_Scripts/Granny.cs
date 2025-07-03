@@ -22,7 +22,7 @@ public class Granny : MonoBehaviour
 
     [Header("Settings")]
     public float moveSpeed = 2.5f;
-    public float damageHit = 100f;
+    public float hitDamage = 100f;
     public float waittingTime = 5f;
     public float detectionRange = 10f;
     public float attackRange = 2f;
@@ -50,6 +50,7 @@ public class Granny : MonoBehaviour
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.speed = moveSpeed;
         audioSource = GetComponent<AudioSource>();
+        InvokeRepeating(nameof(LookForPlayer), 0f, 0.1f);
     }
 
     void Update()
@@ -84,10 +85,6 @@ public class Granny : MonoBehaviour
             case GrannyState.Attacking:
                 AttackPlayer();
                 break;
-        }
-        if (currentState != GrannyState.Chasing && currentState != GrannyState.Attacking)
-        {
-            LookForPlayer();
         }
         PlayFootstepSounds();
     }
@@ -130,6 +127,7 @@ public class Granny : MonoBehaviour
 
     void LookForPlayer()
     {
+        if (currentState == GrannyState.Chasing || currentState == GrannyState.Attacking || currentState == GrannyState.Dead) return;
         Collider[] hits = Physics.OverlapSphere(transform.position, detectionRange);
 
         foreach (var hit in hits)
@@ -220,7 +218,7 @@ public class Granny : MonoBehaviour
             PlayerController playerController = player.GetComponent<PlayerController>();
             if (playerController != null)
             {
-                playerController.TakeDamage(damageHit);
+                playerController.TakeDamage(hitDamage);
                 StartCoroutine(Respawn(5));
                 Debug.Log("Granny Hit!");
             }

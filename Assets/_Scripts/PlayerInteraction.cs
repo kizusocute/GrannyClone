@@ -7,9 +7,16 @@ public class PlayerInteraction : MonoBehaviour
     public float interactionRange = 2f;
     public Camera playerCamera;
     public GameObject player;
+    private int axeLayer;
 
+    void Start()
+    {
+        axeLayer = LayerMask.NameToLayer("Axe");
+    }
     private void Update()
     {
+        if (Time.timeScale == 0f || Cursor.lockState != CursorLockMode.Locked)
+            return;
         if (Input.GetMouseButtonDown(0))
         {
             RaycastHit hit;
@@ -35,7 +42,7 @@ public class PlayerInteraction : MonoBehaviour
     {
         foreach (Transform child in player.transform)
         {
-            if (child.gameObject.layer == LayerMask.NameToLayer("Axe"))
+            if (child.gameObject.layer == axeLayer)
             {
                 return true;
             }

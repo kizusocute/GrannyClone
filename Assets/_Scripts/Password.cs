@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class KeypadPassword : MonoBehaviour
+public class PassWord : MonoBehaviour
 {
     public Button[] digitButtons;
     public Button goButton;
@@ -31,9 +31,12 @@ public class KeypadPassword : MonoBehaviour
 
         for (int i = 0; i < digitButtons.Length; i++)
         {
-            int digit = i; 
+            int digit = i;
+            digitButtons[i].onClick.RemoveAllListeners();
             digitButtons[i].onClick.AddListener(() => OnDigitButtonClicked(digit.ToString()));
         }
+        goButton.onClick.RemoveAllListeners();
+        noButton.onClick.RemoveAllListeners();
         goButton.onClick.AddListener(OnGoButtonClicked);
         noButton.onClick.AddListener(OnNoButtonClicked);
         UIManagerGameScene.Instance.keypadPanel.SetActive(false);

@@ -53,6 +53,13 @@ public class UIManagerGameScene : MonoBehaviour
         {
             MobileControlUI.SetActive(false);
         }
+        resumeButton.onClick.RemoveAllListeners();
+        MainMenuButton.onClick.RemoveAllListeners();
+        pauseButton.onClick.RemoveAllListeners();
+
+        resumeButton.onClick.AddListener(GameManager.Instance.ResumeGame);
+        MainMenuButton.onClick.AddListener(GameManager.Instance.BackToMainMenu);
+        pauseButton.onClick.AddListener(GameManager.Instance.PauseGame);
     }
 
 

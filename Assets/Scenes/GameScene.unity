@@ -593,7 +593,7 @@ MonoBehaviour:
   startPosition: {fileID: 1479037892}
   player: {fileID: 614099525}
   moveSpeed: 2.5
-  damageHit: 100
+  hitDamage: 100
   waittingTime: 5
   detectionRange: 10
   attackRange: 2
@@ -5232,7 +5232,7 @@ PrefabInstance:
     - target: {fileID: 252629911600637343, guid: 974c90fb5c85e1145b28c692035ab2f2,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.2258153
+      value: 2.302
       objectReference: {fileID: 0}
     - target: {fileID: 252629911600637343, guid: 974c90fb5c85e1145b28c692035ab2f2,
         type: 3}
@@ -5242,7 +5242,7 @@ PrefabInstance:
     - target: {fileID: 252629911600637343, guid: 974c90fb5c85e1145b28c692035ab2f2,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -11.165046
+      value: -11.266
       objectReference: {fileID: 0}
     - target: {fileID: 252629911600637343, guid: 974c90fb5c85e1145b28c692035ab2f2,
         type: 3}

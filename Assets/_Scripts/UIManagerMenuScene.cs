@@ -36,6 +36,13 @@ public class UIManagerMenuScene : MonoBehaviour
 
     void Start()
     {
+        playButton.onClick.RemoveAllListeners();
+        optionsButton.onClick.RemoveAllListeners();
+        exitButton.onClick.RemoveAllListeners();
+        backButton.onClick.RemoveAllListeners();
+        easyModeButton.onClick.RemoveAllListeners();
+        hardModeButton.onClick.RemoveAllListeners();
+
         backGroundPanel.SetActive(true);
         optionsPanel.SetActive(false);
         playButton.onClick.AddListener(PlayGame);

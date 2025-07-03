@@ -29,10 +29,13 @@ public class PlayerController : MonoBehaviour
 
     public Transform startPosition;
     public GameObject loadingScreen;
+
+    private Camera playerCamera;
     void Start()
     {
         characterController = GetComponent<CharacterController>();
         currentHealth = maxHeatlh;
+        playerCamera = Camera.main;
     }
 
     // Update is called once per frame
@@ -89,7 +92,7 @@ public class PlayerController : MonoBehaviour
             float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
             transform.Rotate(Vector3.up * mouseX);
             float verticalLookRotation = Camera.main.transform.localEulerAngles.x - mouseY;
-            Camera.main.transform.localRotation = Quaternion.Euler(verticalLookRotation, 0f, 0f);
+            playerCamera.transform.localRotation = Quaternion.Euler(verticalLookRotation, 0f, 0f);
         }
         else
         {
@@ -97,7 +100,7 @@ public class PlayerController : MonoBehaviour
             float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
             transform.Rotate(Vector3.up * mouseX);
             float verticalLookRotation = Camera.main.transform.localEulerAngles.x - mouseY;
-            Camera.main.transform.localRotation = Quaternion.Euler(verticalLookRotation, 0f, 0f);
+            playerCamera.transform.localRotation = Quaternion.Euler(verticalLookRotation, 0f, 0f);
         }
     }
 
@@ -121,6 +124,7 @@ public class PlayerController : MonoBehaviour
         currentHealth -= damage;
         if(currentHealth <=0 && !isDead)
         {
+            Debug.Log("take damage");
             Die();
         }
     }

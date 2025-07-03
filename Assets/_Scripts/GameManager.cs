@@ -36,9 +36,6 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        UIManagerGameScene.Instance.resumeButton.onClick.AddListener(ResumeGame);
-        UIManagerGameScene.Instance.MainMenuButton.onClick.AddListener(BackToMainMenu);
-        UIManagerGameScene.Instance.pauseButton.onClick.AddListener(PauseGame);
         currentDays = maxDays;
         UIManagerGameScene.Instance.UpdateDaysText();
     }
