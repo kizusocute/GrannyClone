@@ -83,11 +83,22 @@ public class PlayerController : MonoBehaviour
 
     void CameraMovement()
     {
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
-        transform.Rotate(Vector3.up * mouseX);
-        float verticalLookRotation = Camera.main.transform.localEulerAngles.x - mouseY;
-        Camera.main.transform.localRotation = Quaternion.Euler(verticalLookRotation, 0f, 0f);
+        if(GameManager.Instance.isMobile)
+        {
+            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+            float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+            transform.Rotate(Vector3.up * mouseX);
+            float verticalLookRotation = Camera.main.transform.localEulerAngles.x - mouseY;
+            Camera.main.transform.localRotation = Quaternion.Euler(verticalLookRotation, 0f, 0f);
+        }
+        else
+        {
+            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+            float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+            transform.Rotate(Vector3.up * mouseX);
+            float verticalLookRotation = Camera.main.transform.localEulerAngles.x - mouseY;
+            Camera.main.transform.localRotation = Quaternion.Euler(verticalLookRotation, 0f, 0f);
+        }
     }
 
     public void PlayerJump()

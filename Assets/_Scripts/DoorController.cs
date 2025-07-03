@@ -7,6 +7,7 @@ public class DoorController : MonoBehaviour
     const string DOOR_OPEN_TRIGGER = "Open";
 
     public KeyCode openDoorKey = KeyCode.R;
+    private bool isOpen = false;
 
     Animator doorAnimator;
     public Transform player;
@@ -37,16 +38,23 @@ public class DoorController : MonoBehaviour
 
     void CheckPlayerInRange()
     {
-        Vector3 directionToPlayer = player.position - transform.position;
-        if (Physics.Raycast(transform.position, directionToPlayer, out RaycastHit hit, interactionRange, playerLayer))
+        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
+        if (distanceToPlayer <= interactionRange)
         {
-            if (hit.transform == player)
+            Vector3 directionToPlayer = (player.position - transform.position).normalized;
+
+            if (Physics.Raycast(transform.position, directionToPlayer, out RaycastHit hit, interactionRange))
             {
-                isPlayerInRange = true;
-                return;
+                if (hit.transform == player)
+                {
+                    isPlayerInRange = true;
+                    return;
+                }
             }
-            isPlayerInRange = false;
         }
+
+        isPlayerInRange = false;
     }
 
     void OpenDoor()
@@ -70,6 +78,8 @@ public class DoorController : MonoBehaviour
                     return;
                 }
             }
+            if (isOpen) return;
+            isOpen = true;
             doorAnimator.SetTrigger(DOOR_OPEN_TRIGGER);
             PlaySound(doorOpenSound);
         }

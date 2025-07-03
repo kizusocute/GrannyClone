@@ -32,8 +32,8 @@ public class PlayerPickUp : MonoBehaviour
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
-        UIManager.Instance.pickUpButton.onClick.AddListener(TryPickUpItem);
-        UIManager.Instance.dropButton.onClick.AddListener(Drop);
+        UIManagerGameScene.Instance.pickUpButton.onClick.AddListener(TryPickUpItem);
+        UIManagerGameScene.Instance.dropButton.onClick.AddListener(Drop);
     }
 
     void Update()
@@ -113,8 +113,8 @@ public class PlayerPickUp : MonoBehaviour
         }
         PlaySound(pickUpSound);
         Debug.Log("Da nhat vat pham: " + item.name);
-        UIManager.Instance.pickUpButton.gameObject.SetActive(false);
-        UIManager.Instance.dropButton.gameObject.SetActive(true);
+        UIManagerGameScene.Instance.pickUpButton.gameObject.SetActive(false);
+        UIManagerGameScene.Instance.dropButton.gameObject.SetActive(true);
     }
 
     void Drop()
@@ -142,8 +142,8 @@ public class PlayerPickUp : MonoBehaviour
         }
 
         Debug.Log("Da tha vat pham");
-        UIManager.Instance.pickUpButton.gameObject.SetActive(true);
-        UIManager.Instance.dropButton.gameObject.SetActive(false);
+        UIManagerGameScene.Instance.pickUpButton.gameObject.SetActive(true);
+        UIManagerGameScene.Instance.dropButton.gameObject.SetActive(false);
     }
 
     void PlaySound(AudioClip audioClip)

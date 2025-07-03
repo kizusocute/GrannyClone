@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class GameManager : MonoBehaviour
     public bool allLocksOpen;
 
     public GameObject endGameCutSence;
+
+    private bool isPaused = false;
 
     private void OnEnable()
     {
@@ -33,13 +36,27 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        UIManagerGameScene.Instance.resumeButton.onClick.AddListener(ResumeGame);
+        UIManagerGameScene.Instance.MainMenuButton.onClick.AddListener(BackToMainMenu);
+        UIManagerGameScene.Instance.pauseButton.onClick.AddListener(PauseGame);
         currentDays = maxDays;
-        UIManager.Instance.UpdateDaysText();
+        UIManagerGameScene.Instance.UpdateDaysText();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (isPaused)
+            {
+                ResumeGame();
+            }
+            else
+            {
+                PauseGame();
+            }
+        }
         if (allLocksOpen)
         {
             StartCoroutine(EndGameCutSence());
@@ -47,14 +64,14 @@ public class GameManager : MonoBehaviour
     }
     void EndGame()
     {
-        // Implement end game logic here
-        Debug.Log("Game Over");
+        SceneManager.LoadScene("MainMenu");
+        //Debug.Log("Game Over");
     }
 
     public void DecreaseDays()
     {
         currentDays--;
-        UIManager.Instance.UpdateDaysText();
+        UIManagerGameScene.Instance.UpdateDaysText();
         if (currentDays <= 0)
         {
             EndGame();
@@ -65,7 +82,30 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
         endGameCutSence.SetActive(true);
+        yield return new WaitForSeconds(7.5f);
+        EndGame();
     }
 
-    
+    public void PauseGame()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Time.timeScale = 0f;
+        isPaused = true;
+        UIManagerGameScene.Instance.ShowPauseGameMenu();
+    }
+
+    public void ResumeGame()
+    {
+        Time.timeScale = 1f;
+        isPaused = false;
+        UIManagerGameScene.Instance.HidePauseGameMenu();
+    }
+
+    public void BackToMainMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MenuScene");
+    }
+
+
 }

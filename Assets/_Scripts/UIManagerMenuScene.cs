@@ -5,12 +5,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class UIManager : MonoBehaviour
+public class UIManagerMenuScene : MonoBehaviour
 {
-    public static UIManager Instance;
-    public GameObject keypadPanel;
-    public GameObject keypad;
-    public Text dayTexts;
+    public static UIManagerMenuScene Instance;
 
     public GameObject backGroundPanel;
     public GameObject optionsPanel;
@@ -20,9 +17,6 @@ public class UIManager : MonoBehaviour
     public Button backButton;
     public Button easyModeButton;
     public Button hardModeButton;
-
-    public Button pickUpButton;
-    public Button dropButton;
 
     private void OnEnable()
     {
@@ -50,21 +44,6 @@ public class UIManager : MonoBehaviour
         backButton.onClick.AddListener(ShowMainMenu);
         easyModeButton.onClick.AddListener(SetEasyMode);
         hardModeButton.onClick.AddListener(SetHardMode);
-        dropButton.gameObject.SetActive(false);
-    }
-
-    void Update()
-    {
-        
-    }
-
-
-    public void UpdateDaysText()
-    {
-        if (dayTexts != null)
-        {
-            dayTexts.text = "Days left : " + GameManager.Instance.currentDays;
-        }
     }
 
     void PlayGame()

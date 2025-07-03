@@ -19,6 +19,12 @@ public class KeypadPassword : MonoBehaviour
     private bool doorUnlock = false;
     private Transform playerTransform;
 
+    public AudioClip buttonPressSound;
+    public AudioClip incorrectPasswordSound;
+    public AudioClip doorUnlockSound;
+
+    AudioSource audioSource;
+
     void Start()
     {
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
@@ -30,17 +36,19 @@ public class KeypadPassword : MonoBehaviour
         }
         goButton.onClick.AddListener(OnGoButtonClicked);
         noButton.onClick.AddListener(OnNoButtonClicked);
-        UIManager.Instance.keypadPanel.SetActive(false);
+        UIManagerGameScene.Instance.keypadPanel.SetActive(false);
+
+        audioSource = playerTransform.gameObject.GetComponent<AudioSource>();
     }
 
     void Update()
     {
-        if (Vector3.Distance(playerTransform.position, UIManager.Instance.keypad.transform.position) > activationDistance)
+        if (Vector3.Distance(playerTransform.position, UIManagerGameScene.Instance.keypad.transform.position) > activationDistance)
         {
-            UIManager.Instance.keypadPanel.SetActive(false);
+            UIManagerGameScene.Instance.keypadPanel.SetActive(false);
             Cursor.lockState = CursorLockMode.Locked;
         }
-        if(Input.GetKeyDown(KeyCode.Q))
+        if(Input.GetKeyDown(KeyCode.Mouse0))
         {
             OnActivateKeypadButtonClicked();
         }
@@ -48,9 +56,9 @@ public class KeypadPassword : MonoBehaviour
 
     void OnActivateKeypadButtonClicked()
     {
-        if (Vector3.Distance(playerTransform.position, UIManager.Instance.keypad.transform.position) <= activationDistance)
+        if (Vector3.Distance(playerTransform.position, UIManagerGameScene.Instance.keypad.transform.position) <= activationDistance)
         {
-            UIManager.Instance.keypadPanel.SetActive(true);
+            UIManagerGameScene.Instance.keypadPanel.SetActive(true);
             SetButtonInteractable(true);
             Cursor.lockState = CursorLockMode.None;
         }
@@ -63,6 +71,7 @@ public class KeypadPassword : MonoBehaviour
             inputPassword += digit;
             Debug.Log("Current Input: " + inputPassword);
         }
+        PlaySound(buttonPressSound);
     }
 
     void OnGoButtonClicked()
@@ -73,13 +82,15 @@ public class KeypadPassword : MonoBehaviour
             {
                 doorUnlock = true;
                 keypadLight.color = Color.green;
-                UIManager.Instance.keypadPanel.SetActive(false);
+                UIManagerGameScene.Instance.keypadPanel.SetActive(false);
                 Cursor.lockState = CursorLockMode.Locked;
+                PlaySound(doorUnlockSound);
                 Debug.Log("Cua da duoc mo");
             }
             else
             {
                 guessCount++;
+                PlaySound(incorrectPasswordSound);
                 Debug.Log("Sai mat khau, vui long nhap lai");
                 inputPassword = "";
                 if (guessCount >= maxGuesses)
@@ -108,5 +119,13 @@ public class KeypadPassword : MonoBehaviour
         }
         goButton.interactable = interactable;
         noButton.interactable = interactable;
+    }
+
+    void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
     }
 }

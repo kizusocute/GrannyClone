@@ -185,13 +185,14 @@ public class Granny : MonoBehaviour
     }
     void UpdateAnimations()
     {
-        bool isWalking = navMeshAgent.velocity.magnitude > 0.1f;
+        bool isActuallyWalking = navMeshAgent.velocity.magnitude > 0.1f;
+        bool isWalking = isActuallyWalking && currentState != GrannyState.Waiting;
 
         animator.SetBool("isWalking", isWalking);
         animator.SetBool("isAttacking", currentState == GrannyState.Attacking || isAttacking);
         animator.SetBool("isDead", currentState == GrannyState.Dead);
 
-        bool isIdle = !isWalking && currentState == GrannyState.Idle;
+        bool isIdle = !isWalking && (currentState == GrannyState.Idle || currentState == GrannyState.Waiting);
 
         animator.SetBool("isIdle", isIdle);
     }
@@ -202,23 +203,36 @@ public class Granny : MonoBehaviour
         {
             isAttacking = false;
             navMeshAgent.isStopped = false;
-            currentState = GrannyState.Attacking; 
+            currentState = GrannyState.Attacking;
             yield break;
         }
+
         navMeshAgent.isStopped = true;
 
-        yield return new WaitForSeconds(1.0f); // attack anim time
+        yield return new WaitForSeconds(0.5f); 
 
-        PlayerController playerController = player.GetComponent<PlayerController>();
-        if (playerController != null)
+        Vector3 directionToPlayer = (player.position - transform.position).normalized;
+        float distance = Vector3.Distance(transform.position, player.position);
+        float angle = Vector3.Angle(transform.forward, directionToPlayer);
+
+        if (distance <= attackRange && angle <= 60f) 
         {
-            playerController.TakeDamage(damageHit);
-            Debug.Log("Granny Hit");
+            PlayerController playerController = player.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                playerController.TakeDamage(damageHit);
+                StartCoroutine(Respawn(5));
+                Debug.Log("Granny Hit!");
+            }
         }
-        lastAttackTime = Time.time;
-        StartCoroutine(Respawn(5));
+        else
+        {
+            Debug.Log("Miss");
+        }
 
-        yield return new WaitForSeconds(1f); // delay
+        lastAttackTime = Time.time;
+
+        yield return new WaitForSeconds(0.5f); // delay anim attack
 
         navMeshAgent.isStopped = false;
         isAttacking = false;
