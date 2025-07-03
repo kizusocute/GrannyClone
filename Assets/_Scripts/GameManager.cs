@@ -62,6 +62,7 @@ public class GameManager : MonoBehaviour
     void EndGame()
     {
         SceneManager.LoadScene("MainMenu");
+        Cursor.lockState = CursorLockMode.None;
         //Debug.Log("Game Over");
     }
 
@@ -71,6 +72,7 @@ public class GameManager : MonoBehaviour
         UIManagerGameScene.Instance.UpdateDaysText();
         if (currentDays <= 0)
         {
+            Cursor.lockState = CursorLockMode.None;
             EndGame();
         }
     }
@@ -101,6 +103,7 @@ public class GameManager : MonoBehaviour
     public void BackToMainMenu()
     {
         Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.None;
         SceneManager.LoadScene("MenuScene");
     }
 

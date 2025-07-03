@@ -7,7 +7,6 @@ public class DoorController : MonoBehaviour
     const string DOOR_OPEN_TRIGGER = "Open";
 
     public KeyCode openDoorKey = KeyCode.R;
-    private bool isOpen = false;
 
     Animator doorAnimator;
     public Transform player;
@@ -16,14 +15,15 @@ public class DoorController : MonoBehaviour
     private bool isPlayerInRange = false;
     //public GameObject keyObject;
     public string keyLayerName = "";
-    
+
     public AudioClip doorOpenSound;
     AudioSource audioSource;
+
+    private bool isOpen = false;
 
     void Start()
     {
         doorAnimator = GetComponent<Animator>();
-        //keyLayerName = keyObject != null ? keyObject.layer.ToString() : keyLayerName;
         audioSource = player.gameObject.GetComponent<AudioSource>();
     }
 
@@ -38,30 +38,23 @@ public class DoorController : MonoBehaviour
 
     void CheckPlayerInRange()
     {
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-
-        if (distanceToPlayer <= interactionRange)
+        Vector3 directionToPlayer = player.position - transform.position;
+        if (Physics.Raycast(transform.position, directionToPlayer, out RaycastHit hit, interactionRange, playerLayer))
         {
-            Vector3 directionToPlayer = (player.position - transform.position).normalized;
-
-            if (Physics.Raycast(transform.position, directionToPlayer, out RaycastHit hit, interactionRange))
+            if (hit.transform == player)
             {
-                if (hit.transform == player)
-                {
-                    isPlayerInRange = true;
-                    return;
-                }
+                isPlayerInRange = true;
+                return;
             }
+            isPlayerInRange = false;
         }
-
-        isPlayerInRange = false;
     }
 
     void OpenDoor()
     {
         if (doorAnimator != null)
         {
-            if(!string.IsNullOrEmpty(keyLayerName))
+            if (!string.IsNullOrEmpty(keyLayerName))
             {
                 bool playerHasKey = false;
                 foreach (Transform key in player)
@@ -72,7 +65,7 @@ public class DoorController : MonoBehaviour
                         break;
                     }
                 }
-                if(!playerHasKey)
+                if (!playerHasKey)
                 {
                     Debug.Log("Khong co chia khoa");
                     return;

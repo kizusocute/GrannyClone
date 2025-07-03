@@ -24,7 +24,7 @@ public class Granny : MonoBehaviour
     public float moveSpeed = 2.5f;
     public float hitDamage = 100f;
     public float waittingTime = 5f;
-    public float detectionRange = 10f;
+    public float detectionRange = 6f;
     public float attackRange = 2f;
     public float attackCooldown = 2f;
 

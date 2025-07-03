@@ -595,7 +595,7 @@ MonoBehaviour:
   moveSpeed: 2.5
   hitDamage: 100
   waittingTime: 5
-  detectionRange: 10
+  detectionRange: 6
   attackRange: 2
   attackCooldown: 2
   footstepSounds:
@@ -4477,7 +4477,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1073759117
+--- !u!114 &1073759122
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4491,7 +4491,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   openDoorKey: 114
   player: {fileID: 614099525}
-  interactionRange: 1.5
+  interactionRange: 3
   playerLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -8751,11 +8751,11 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6388924404842709244, guid: 20bf42773f9830f4e8d7c18f093326bf,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1073759117}
+      addedObject: {fileID: 1073759116}
     - targetCorrespondingSourceObject: {fileID: 6388924404842709244, guid: 20bf42773f9830f4e8d7c18f093326bf,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1073759116}
+      addedObject: {fileID: 1073759122}
     - targetCorrespondingSourceObject: {fileID: 6302429129397234094, guid: 20bf42773f9830f4e8d7c18f093326bf,
         type: 3}
       insertIndex: -1
